@@ -1,7 +1,9 @@
 import java.awt.Rectangle;
 import java.awt.Graphics;
 import java.awt.image.ImageObserver;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /** <p>The abstract class for an item on a slide<p>
  * <p>All SlideItems have drawingfunctionality.</p>
@@ -17,6 +19,44 @@ import java.util.List;
 */
 
 public abstract class SlideItem {
+	private static final Map<String, SlideItemBuilder> ITEM_BUILDERS = new HashMap<>();
+
+	static {
+		registerSlideItemType(TextItem.KIND, new SlideItemBuilder() {
+			public SlideItem create(int level, String text) {
+				return new TextItem(level, text);
+			}
+		});
+		registerSlideItemType(BitmapItem.KIND, new SlideItemBuilder() {
+			public SlideItem create(int level, String text) {
+				return new BitmapItem(level, text);
+			}
+		});
+	}
+
+	public interface SlideItemBuilder {
+		SlideItem create(int level, String text);
+	}
+
+	public static void registerSlideItemType(String kind, SlideItemBuilder builder) {
+		if (kind != null && builder != null) {
+			ITEM_BUILDERS.put(kind, builder);
+		}
+	}
+
+	public static SlideItem createSlideItem(String kind, int level, String text) {
+		SlideItemBuilder builder = ITEM_BUILDERS.get(kind);
+		return builder == null ? null : builder.create(level, text);
+	}
+
+	public String getKind() {
+		return "unknown";
+	}
+
+	public String getSerializationText() {
+		return "";
+	}
+
 	private int level = 0; // level of the slideitem
 
 	public SlideItem(int lev) {

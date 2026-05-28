@@ -28,9 +28,18 @@ import java.util.ArrayList;
  */
 
 public class TextItem extends SlideItem {
+	public static final String KIND = "text";
 	private String text;
 	
 	private static final String EMPTYTEXT = "No Text Given";
+
+	static {
+		registerSlideItemType(KIND, new SlideItemBuilder() {
+			public SlideItem create(int level, String text) {
+				return new TextItem(level, text);
+			}
+		});
+	}
 
 // a textitem of level level, with the text string
 	public TextItem(int level, String string) {
@@ -46,6 +55,16 @@ public class TextItem extends SlideItem {
 // give the text
 	public String getText() {
 		return text == null ? "" : text;
+	}
+
+	@Override
+	public String getKind() {
+		return KIND;
+	}
+
+	@Override
+	public String getSerializationText() {
+		return getText();
 	}
 
 // geef de AttributedString voor het item

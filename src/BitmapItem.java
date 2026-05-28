@@ -24,11 +24,20 @@ import java.io.IOException;
 */
 
 public class BitmapItem extends SlideItem {
+  public static final String KIND = "image";
   private BufferedImage bufferedImage;
   private String imageName;
   
   protected static final String FILE = "File ";
   protected static final String NOTFOUND = " not found";
+
+  static {
+    registerSlideItemType(KIND, new SlideItemBuilder() {
+      public SlideItem create(int level, String text) {
+        return new BitmapItem(level, text);
+      }
+    });
+  }
 
 // level is equal to item-level; name is the name of the file with the Image
 	public BitmapItem(int level, String name) {
@@ -54,6 +63,16 @@ public class BitmapItem extends SlideItem {
 // give the filename of the image
 	public String getName() {
 		return imageName;
+	}
+
+	@Override
+	public String getKind() {
+		return KIND;
+	}
+
+	@Override
+	public String getSerializationText() {
+		return getName();
 	}
 
 // give the  bounding box of the image

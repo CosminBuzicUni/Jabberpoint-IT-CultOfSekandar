@@ -21,6 +21,13 @@ public abstract class Accessor implements PresentationReader, PresentationWriter
 		return new DemoPresentation();
 	}
 
+	public static Accessor getAccessor(String filename) {
+		if (filename == null || filename.isEmpty() || filename.toLowerCase().endsWith(DEFAULT_EXTENSION)) {
+			return new XMLAccessor();
+		}
+		throw new IllegalArgumentException("Unknown accessor for file: " + filename);
+	}
+
 	public Accessor() {
 	}
 

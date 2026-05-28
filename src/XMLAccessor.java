@@ -100,16 +100,11 @@ public class XMLAccessor extends Accessor {
 			}
 		}
 		String type = attributes.getNamedItem(KIND).getTextContent();
-		if (TEXT.equals(type)) {
-			slide.append(new TextItem(level, item.getTextContent()));
-		}
-		else {
-			if (IMAGE.equals(type)) {
-				slide.append(new BitmapItem(level, item.getTextContent()));
-			}
-			else {
-				System.err.println(UNKNOWNTYPE);
-			}
+		SlideItem slideItem = SlideItem.createSlideItem(type, level, item.getTextContent());
+		if (slideItem != null) {
+			slide.append(slideItem);
+		} else {
+			System.err.println(UNKNOWNTYPE + ": " + type);
 		}
 	}
 
@@ -128,20 +123,8 @@ public class XMLAccessor extends Accessor {
 			Vector<SlideItem> slideItems = slide.getSlideItems();
 			for (int itemNumber = 0; itemNumber<slideItems.size(); itemNumber++) {
 				SlideItem slideItem = (SlideItem) slideItems.elementAt(itemNumber);
-				out.print("<item kind="); 
-				if (slideItem instanceof TextItem) {
-					out.print("\"text\" level=\"" + slideItem.getLevel() + "\">");
-					out.print( ( (TextItem) slideItem).getText());
-				}
-				else {
-					if (slideItem instanceof BitmapItem) {
-						out.print("\"image\" level=\"" + slideItem.getLevel() + "\">");
-						out.print( ( (BitmapItem) slideItem).getName());
-					}
-					else {
-						System.out.println("Ignoring " + slideItem);
-					}
-				}
+				out.print("<item kind=\"" + slideItem.getKind() + "\" level=\"" + slideItem.getLevel() + "\">");
+				out.print(slideItem.getSerializationText());
 				out.println("</item>");
 			}
 			out.println("</slide>");
