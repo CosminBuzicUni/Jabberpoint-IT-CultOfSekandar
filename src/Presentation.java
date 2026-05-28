@@ -17,28 +17,28 @@ public class Presentation implements Observable {
 	private String showTitle; // title of the presentation
 	private ArrayList<Slide> showList = null; // an ArrayList with Slides
 	private int currentSlideNumber = 0; // the slidenummer of the current Slide
-	private Observer slideViewComponent = null; // the viewcomponent of the Slides
+	private ArrayList<Observer> observers = new ArrayList<>(); // list of observers
 
 	@Override
 	public void addObserver(Observer o) {
-		this.setShowView(o);
+		if (!observers.contains(o)) {
+			observers.add(o);
+		}
 	}
 
 	@Override
 	public void removeObserver(Observer o) {
-		if (this.slideViewComponent != o) {
-			return;
-		}
-		this.setShowView(null);
+		observers.remove(o);
 	}
 
 	@Override
 	public void notifyObserver(Presentation p) {
-		this.slideViewComponent.update(p);
+		for (Observer observer : observers) {
+			observer.update(p);
+		}
 	}
 
 	public Presentation() {
-		slideViewComponent = null;
 		clear();
 	}
 
@@ -59,10 +59,6 @@ public class Presentation implements Observable {
 		showTitle = nt;
 	}
 
-	public void setShowView(Observer slideViewerComponent) {
-		this.slideViewComponent = slideViewerComponent;
-	}
-
 	// give the number of the current slide
 	public int getSlideNumber() {
 		return currentSlideNumber;
@@ -71,9 +67,7 @@ public class Presentation implements Observable {
 	// change the current slide number and signal it to the window
 	public void setSlideNumber(int number) {
 		currentSlideNumber = number;
-		if (slideViewComponent != null) {
-			notifyObserver(this);
-		}
+		notifyObserver(this);
 	}
 
 	// go to the previous slide unless your at the beginning of the presentation
