@@ -6,7 +6,7 @@ public class AccessorDemoTest {
 
     @Test
     public void testGetDemoAccessorReturnsDemoPresentation() {
-        Accessor accessor = Accessor.getDemoAccessor();
+        PresentationReader accessor = Accessor.getDemoAccessor();
 
         assertNotNull(accessor);
         assertTrue(accessor instanceof DemoPresentation);
@@ -24,9 +24,10 @@ public class AccessorDemoTest {
         assertEquals("JabberPoint", presentation.getSlide(0).getTitle());
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void testDemoSaveFileThrows() throws Exception {
-        Presentation presentation = new Presentation();
-        Accessor.getDemoAccessor().saveFile(presentation, "unused");
+    @Test
+    public void testDemoPresentationIsReadOnly() {
+        PresentationReader accessor = Accessor.getDemoAccessor();
+
+        assertFalse(accessor instanceof PresentationWriter);
     }
 }
