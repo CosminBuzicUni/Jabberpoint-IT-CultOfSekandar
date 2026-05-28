@@ -28,7 +28,7 @@ import java.util.ArrayList;
  */
 
 public class TextItem extends SlideItem {
-	public static final String KIND = "text";
+	public static final SlideItemKind KIND = SlideItemKind.TEXT;
 	private String text;
 	
 	private static final String EMPTYTEXT = "No Text Given";
@@ -58,7 +58,7 @@ public class TextItem extends SlideItem {
 	}
 
 	@Override
-	public String getKind() {
+	public SlideItemKind getKind() {
 		return KIND;
 	}
 

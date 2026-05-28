@@ -19,38 +19,36 @@ import java.util.Map;
 */
 
 public abstract class SlideItem {
-	private static final Map<String, SlideItemBuilder> ITEM_BUILDERS = new HashMap<>();
+	private static final Map<SlideItemKind, SlideItemBuilder> ITEM_BUILDERS = new HashMap<>();
 
 	static {
-		registerSlideItemType(TextItem.KIND, new SlideItemBuilder() {
-			public SlideItem create(int level, String text) {
-				return new TextItem(level, text);
-			}
-		});
-		registerSlideItemType(BitmapItem.KIND, new SlideItemBuilder() {
-			public SlideItem create(int level, String text) {
-				return new BitmapItem(level, text);
-			}
-		});
+		for (SlideItemKind kind : SlideItemKind.values()) {
+			if (kind == SlideItemKind.UNKNOWN) continue;
+			registerSlideItemType(kind, new SlideItemBuilder() {
+				public SlideItem create(int level, String text) {
+					return new TextItem(level, text);
+				}
+			});
+		}
 	}
 
 	public interface SlideItemBuilder {
 		SlideItem create(int level, String text);
 	}
 
-	public static void registerSlideItemType(String kind, SlideItemBuilder builder) {
+	public static void registerSlideItemType(SlideItemKind kind, SlideItemBuilder builder) {
 		if (kind != null && builder != null) {
 			ITEM_BUILDERS.put(kind, builder);
 		}
 	}
 
-	public static SlideItem createSlideItem(String kind, int level, String text) {
+	public static SlideItem createSlideItem(SlideItemKind kind, int level, String text) {
 		SlideItemBuilder builder = ITEM_BUILDERS.get(kind);
 		return builder == null ? null : builder.create(level, text);
 	}
 
-	public String getKind() {
-		return "unknown";
+	public SlideItemKind getKind() {
+		return SlideItemKind.UNKNOWN;
 	}
 
 	public String getSerializationText() {

@@ -100,7 +100,7 @@ public class XMLAccessor extends Accessor {
 			}
 		}
 		String type = attributes.getNamedItem(KIND).getTextContent();
-		SlideItem slideItem = SlideItem.createSlideItem(type, level, item.getTextContent());
+		SlideItem slideItem = SlideItem.createSlideItem(SlideItemKind.valueOf(type.toUpperCase()), level, item.getTextContent());
 		if (slideItem != null) {
 			slide.append(slideItem);
 		} else {

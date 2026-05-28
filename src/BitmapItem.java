@@ -24,7 +24,7 @@ import java.io.IOException;
 */
 
 public class BitmapItem extends SlideItem {
-  public static final String KIND = "image";
+  public static final SlideItemKind KIND = SlideItemKind.IMAGE;
   private BufferedImage bufferedImage;
   private String imageName;
   
@@ -66,7 +66,7 @@ public class BitmapItem extends SlideItem {
 	}
 
 	@Override
-	public String getKind() {
+	public SlideItemKind getKind() {
 		return KIND;
 	}
 
