@@ -1,13 +1,20 @@
-public enum SlideItemKind
-{
-    UNKNOWN ("unknown"),
-    TEXT ("text"),
-    IMAGE ("image");
+import java.util.function.BiFunction;
 
+enum SlideItemKind {
+    UNKNOWN(null, "unknown"),
+    TEXT(TextItem::new, "text"),
+    IMAGE(BitmapItem::new, "image");
+
+    private final BiFunction<Integer, String, SlideItem> factory;
     private final String name;
 
-    private SlideItemKind(String s) {
-        name = s;
+    SlideItemKind(BiFunction<Integer, String, SlideItem> factory, String name) {
+        this.factory = factory;
+        this.name = name;
+    }
+
+    public SlideItem create(int level, String text) {
+        return factory.apply(level, text);
     }
 
     public String toString() {

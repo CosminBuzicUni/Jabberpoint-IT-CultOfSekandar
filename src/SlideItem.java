@@ -24,11 +24,7 @@ public abstract class SlideItem {
 	static {
 		for (SlideItemKind kind : SlideItemKind.values()) {
 			if (kind == SlideItemKind.UNKNOWN) continue;
-			registerSlideItemType(kind, new SlideItemBuilder() {
-				public SlideItem create(int level, String text) {
-					return new TextItem(level, text);
-				}
-			});
+			registerSlideItemType(kind, kind::create);
 		}
 	}
 

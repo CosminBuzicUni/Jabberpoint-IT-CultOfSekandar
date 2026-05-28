@@ -99,12 +99,19 @@ public class XMLAccessor extends Accessor {
 				System.err.println(NFE);
 			}
 		}
-		String type = attributes.getNamedItem(KIND).getTextContent();
-		SlideItem slideItem = SlideItem.createSlideItem(SlideItemKind.valueOf(type.toUpperCase()), level, item.getTextContent());
+		String kindText = attributes.getNamedItem(KIND).getTextContent();
+		SlideItemKind kind = null;
+
+		try {
+			kind = SlideItemKind.valueOf(kindText.toUpperCase());
+		} catch (IllegalArgumentException ignored) {
+		}
+
+        SlideItem slideItem = SlideItem.createSlideItem(kind, level, item.getTextContent());
 		if (slideItem != null) {
 			slide.append(slideItem);
 		} else {
-			System.err.println(UNKNOWNTYPE + ": " + type);
+			System.err.println(UNKNOWNTYPE + ": " + kindText);
 		}
 	}
 
