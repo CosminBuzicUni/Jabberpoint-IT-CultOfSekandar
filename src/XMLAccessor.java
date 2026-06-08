@@ -12,6 +12,7 @@ import org.xml.sax.SAXException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 
@@ -88,31 +89,51 @@ public class XMLAccessor extends Accessor {
 	}
 
 	protected void loadSlideItem(Slide slide, Element item) {
-		int level = 1; // default
+		SlideItem slideItem = parseSlideItem(item);
+		if (slideItem != null) {
+			slide.append(slideItem);
+		}
+	}
+
+	private SlideItem parseSlideItem(Element item) {
+		int level = 1;
 		NamedNodeMap attributes = item.getAttributes();
 		String leveltext = attributes.getNamedItem(LEVEL).getTextContent();
 		if (leveltext != null) {
 			try {
 				level = Integer.parseInt(leveltext);
-			}
-			catch(NumberFormatException x) {
+			} catch (NumberFormatException x) {
 				System.err.println(NFE);
 			}
 		}
 		String kindText = attributes.getNamedItem(KIND).getTextContent();
 		SlideItemKind kind = null;
-
 		try {
 			kind = SlideItemKind.valueOf(kindText.toUpperCase());
 		} catch (IllegalArgumentException ignored) {
 		}
 
-        SlideItem slideItem = SlideItem.createSlideItem(kind, level, item.getTextContent());
-		if (slideItem != null) {
-			slide.append(slideItem);
-		} else {
+		if (kind == SlideItemKind.COMPOSITE) {
+			CompositeSlideItem composite = new CompositeSlideItem(level);
+			NodeList children = item.getChildNodes();
+			for (int i = 0; i < children.getLength(); i++) {
+				Node child = children.item(i);
+				if (child.getNodeType() == Node.ELEMENT_NODE
+						&& ((Element) child).getTagName().equals(ITEM)) {
+					SlideItem childItem = parseSlideItem((Element) child);
+					if (childItem != null) {
+						composite.addChild(childItem);
+					}
+				}
+			}
+			return composite;
+		}
+
+		SlideItem slideItem = SlideItem.createSlideItem(kind, level, item.getTextContent());
+		if (slideItem == null) {
 			System.err.println(UNKNOWNTYPE + ": " + kindText);
 		}
+		return slideItem;
 	}
 
 	public void saveFile(Presentation presentation, String filename) throws IOException {
@@ -128,15 +149,26 @@ public class XMLAccessor extends Accessor {
 			out.println("<slide>");
 			out.println("<title>" + slide.getTitle() + "</title>");
 			Vector<SlideItem> slideItems = slide.getSlideItems();
-			for (int itemNumber = 0; itemNumber<slideItems.size(); itemNumber++) {
-				SlideItem slideItem = (SlideItem) slideItems.elementAt(itemNumber);
-				out.print("<item kind=\"" + slideItem.getKind() + "\" level=\"" + slideItem.getLevel() + "\">");
-				out.print(slideItem.getSerializationText());
-				out.println("</item>");
+			for (int itemNumber = 0; itemNumber < slideItems.size(); itemNumber++) {
+				writeSlideItem(out, slideItems.elementAt(itemNumber));
 			}
 			out.println("</slide>");
 		}
 		out.println("</presentation>");
 		out.close();
+	}
+
+	private void writeSlideItem(PrintWriter out, SlideItem item) {
+		out.print("<item kind=\"" + item.getKind() + "\" level=\"" + item.getLevel() + "\">");
+		if (item.isComposite()) {
+			out.println();
+			for (SlideItem child : item.getChildren()) {
+				out.print("\t");
+				writeSlideItem(out, child);
+			}
+		} else {
+			out.print(item.getSerializationText());
+		}
+		out.println("</item>");
 	}
 }

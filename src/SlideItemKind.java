@@ -3,7 +3,8 @@ import java.util.function.BiFunction;
 enum SlideItemKind {
     UNKNOWN(null, "unknown"),
     TEXT(TextItem::new, "text"),
-    IMAGE(BitmapItem::new, "image");
+    IMAGE(BitmapItem::new, "image"),
+    COMPOSITE((level, text) -> new CompositeSlideItem(level), "composite");
 
     private final BiFunction<Integer, String, SlideItem> factory;
     private final String name;
