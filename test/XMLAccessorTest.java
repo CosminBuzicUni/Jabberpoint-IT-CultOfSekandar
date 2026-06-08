@@ -38,6 +38,37 @@ public class XMLAccessorTest {
     }
 
     @Test
+    public void testCompositeRoundTrip() throws Exception {
+        Presentation source = new Presentation();
+        source.setTitle("Composite Show");
+
+        Slide slide = new Slide();
+        slide.setTitle("Composite Slide");
+        CompositeSlideItem group = new CompositeSlideItem(1);
+        group.addChild(new TextItem(2, "Child One"));
+        group.addChild(new TextItem(2, "Child Two"));
+        slide.append(group);
+        source.append(slide);
+
+        File tempXml = File.createTempFile("jabberpoint-composite", ".xml", new File("."));
+        tempXml.deleteOnExit();
+
+        XMLAccessor accessor = new XMLAccessor();
+        accessor.saveFile(source, tempXml.getAbsolutePath());
+
+        Presentation loaded = new Presentation();
+        accessor.loadFile(loaded, tempXml.getAbsolutePath());
+
+        assertEquals(1, loaded.getSize());
+        SlideItem item = loaded.getSlide(0).getSlideItem(0);
+        assertTrue(item instanceof CompositeSlideItem);
+        CompositeSlideItem loadedGroup = (CompositeSlideItem) item;
+        assertEquals(2, loadedGroup.getChildCount());
+        assertEquals("Child One", ((TextItem) loadedGroup.getChild(0)).getText());
+        assertEquals("Child Two", ((TextItem) loadedGroup.getChild(1)).getText());
+    }
+
+    @Test
     public void testLoadMissingFileDoesNotThrow() throws Exception {
         XMLAccessor accessor = new XMLAccessor();
         Presentation presentation = new Presentation();

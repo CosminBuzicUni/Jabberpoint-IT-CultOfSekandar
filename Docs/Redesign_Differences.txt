@@ -6,7 +6,7 @@ Goal
 Main changes
 - Composite: slide content is treated as a tree with `Slide`, `SlideItem`, `TextItem`, `BitmapItem`, and `CompositeSlideItem`.
 - Observer: `Presentation` notifies `SlideViewerComponent` when the current slide changes.
-- Command: user actions are wrapped in command objects such as `NextSlideCommand`, `PrevSlideCommand`, `GotoSlideCommand`, and `ExitAppCommand`.
+- Command: all user actions are wrapped in command objects. Navigation: `NextSlideCommand`, `PrevSlideCommand`, `GotoSlideCommand`. Application: `ExitAppCommand`. File operations: `OpenFileCommand`, `NewPresentationCommand`, `SaveFileCommand`.
 
 Why this matters
 - Composite removes type checks when rendering or traversing slide content.
@@ -16,7 +16,7 @@ Why this matters
 Where to look
 - Model tree: `src/Slide.java`, `src/SlideItem.java`, `src/TextItem.java`, `src/BitmapItem.java`, `src/CompositeSlideItem.java`
 - View update: `src/Presentation.java`, `src/SlideViewerComponent.java`
-- Actions: `src/Command.java`, `src/NextSlideCommand.java`, `src/PrevSlideCommand.java`, `src/GotoSlideCommand.java`, `src/ExitAppCommand.java`, `src/KeyController.java`, `src/MenuController.java`
+- Actions: `src/Command.java`, `src/NextSlideCommand.java`, `src/PrevSlideCommand.java`, `src/GotoSlideCommand.java`, `src/ExitAppCommand.java`, `src/OpenFileCommand.java`, `src/NewPresentationCommand.java`, `src/SaveFileCommand.java`, `src/KeyController.java`, `src/MenuController.java`, `src/SlideViewerFrame.java`
 
 Short summary
 - The redesign uses Composite for structure, Observer for updates, and Command for actions. That reduces coupling and makes the code easier to read, test, and extend.
