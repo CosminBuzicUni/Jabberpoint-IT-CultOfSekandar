@@ -5,7 +5,7 @@ import java.awt.MenuItem;
 import java.awt.MenuShortcut;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import java.io.IOException;
+import java.util.function.IntFunction;
 
 import javax.swing.JOptionPane;
 
@@ -19,15 +19,18 @@ import javax.swing.JOptionPane;
  * @version 1.6 2014/05/16 Sylvia Stuurman
  */
 public class MenuController extends MenuBar {
-    
-	private Frame parent; // the frame, only used as parent for the Dialogs
-	private Presentation presentation; // Commands are given to the presentation
+
+	private final Frame parent;
+	private final Command openCommand;
+	private final Command newCommand;
+	private final Command saveCommand;
 	private final Command nextCommand;
 	private final Command prevCommand;
 	private final Command exitCommand;
-    
+	private final IntFunction<Command> gotoCommandFactory;
+
 	private static final long serialVersionUID = 227L;
-	
+
 	protected static final String ABOUT = "About";
 	protected static final String FILE = "File";
 	protected static final String EXIT = "Exit";
@@ -40,98 +43,72 @@ public class MenuController extends MenuBar {
 	protected static final String PREV = "Prev";
 	protected static final String SAVE = "Save";
 	protected static final String VIEW = "View";
-	
-	protected static final String TESTFILE = "test.xml";
-	protected static final String SAVEFILE = "dump.xml";
-	
-	protected static final String IOEX = "IO Exception: ";
-	protected static final String LOADERR = "Load Error";
-	protected static final String SAVEERR = "Save Error";
 
-	public MenuController(Frame frame, Presentation pres, Command nextCommand, Command prevCommand, Command exitCommand) {
-		parent = frame;
-		presentation = pres;
+	public static final String TESTFILE = "test.xml";
+	public static final String SAVEFILE = "dump.xml";
+
+	public MenuController(Frame parent, Command openCommand, Command newCommand, Command saveCommand,
+						  Command nextCommand, Command prevCommand, Command exitCommand,
+						  IntFunction<Command> gotoCommandFactory) {
+		this.parent = parent;
+		this.openCommand = openCommand;
+		this.newCommand = newCommand;
+		this.saveCommand = saveCommand;
 		this.nextCommand = nextCommand;
 		this.prevCommand = prevCommand;
 		this.exitCommand = exitCommand;
+		this.gotoCommandFactory = gotoCommandFactory;
+
 		MenuItem menuItem;
 		Menu fileMenu = new Menu(FILE);
+
 		fileMenu.add(menuItem = mkMenuItem(OPEN));
-		menuItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent actionEvent) {
-				presentation.clear();
-				PresentationReader xmlReader = Accessor.getAccessor(TESTFILE);
-				try {
-					xmlReader.loadFile(presentation, TESTFILE);
-					presentation.setSlideNumber(0);
-				} catch (IOException exc) {
-					JOptionPane.showMessageDialog(parent, IOEX + exc, 
-         			LOADERR, JOptionPane.ERROR_MESSAGE);
-				}
-				parent.repaint();
-			}
-		} );
+		menuItem.addActionListener(actionEvent -> openCommand.execute());
+
 		fileMenu.add(menuItem = mkMenuItem(NEW));
-		menuItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent actionEvent) {
-				presentation.clear();
-				parent.repaint();
-			}
-		});
+		menuItem.addActionListener(actionEvent -> newCommand.execute());
+
 		fileMenu.add(menuItem = mkMenuItem(SAVE));
-		menuItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				PresentationWriter xmlWriter = Accessor.getAccessor(SAVEFILE);
-				try {
-					xmlWriter.saveFile(presentation, SAVEFILE);
-				} catch (IOException exc) {
-					JOptionPane.showMessageDialog(parent, IOEX + exc, 
-							SAVEERR, JOptionPane.ERROR_MESSAGE);
-				}
-			}
-		});
+		menuItem.addActionListener(actionEvent -> saveCommand.execute());
+
 		fileMenu.addSeparator();
+
 		fileMenu.add(menuItem = mkMenuItem(EXIT));
-		menuItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent actionEvent) {
-				if (exitCommand != null) exitCommand.execute();
-			}
-		});
+		menuItem.addActionListener(actionEvent -> exitCommand.execute());
+
 		add(fileMenu);
+
 		Menu viewMenu = new Menu(VIEW);
+
 		viewMenu.add(menuItem = mkMenuItem(NEXT));
-		menuItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent actionEvent) {
-				if (nextCommand != null) nextCommand.execute();
-			}
-		});
+		menuItem.addActionListener(actionEvent -> nextCommand.execute());
+
 		viewMenu.add(menuItem = mkMenuItem(PREV));
-		menuItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent actionEvent) {
-				if (prevCommand != null) prevCommand.execute();
-			}
-		});
+		menuItem.addActionListener(actionEvent -> prevCommand.execute());
+
 		viewMenu.add(menuItem = mkMenuItem(GOTO));
 		menuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent actionEvent) {
-				String pageNumberStr = JOptionPane.showInputDialog((Object)PAGENR);
-				int pageNumber = Integer.parseInt(pageNumberStr);
-				Command gotoCmd = new GotoSlideCommand(presentation, pageNumber - 1);
-				gotoCmd.execute();
+				String pageNumberStr = JOptionPane.showInputDialog((Object) PAGENR);
+				if (pageNumberStr == null) return;
+				try {
+					int pageNumber = Integer.parseInt(pageNumberStr);
+					gotoCommandFactory.apply(pageNumber - 1).execute();
+				} catch (NumberFormatException e) {
+					JOptionPane.showMessageDialog(parent, "\"" + pageNumberStr + "\" is not a valid page number",
+							"Invalid input", JOptionPane.ERROR_MESSAGE);
+				}
 			}
 		});
+
 		add(viewMenu);
+
 		Menu helpMenu = new Menu(HELP);
 		helpMenu.add(menuItem = mkMenuItem(ABOUT));
-		menuItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent actionEvent) {
-				AboutBox.show(parent);
-			}
-		});
-		setHelpMenu(helpMenu);		// needed for portability (Motif, etc.).
+		menuItem.addActionListener(actionEvent -> AboutBox.show(parent));
+		setHelpMenu(helpMenu);
 	}
 
-// create a menu item
 	public MenuItem mkMenuItem(String name) {
 		return new MenuItem(name, new MenuShortcut(name.charAt(0)));
 	}

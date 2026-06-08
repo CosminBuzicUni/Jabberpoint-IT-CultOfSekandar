@@ -16,11 +16,11 @@ import javax.swing.JFrame;
 
 public class SlideViewerFrame extends JFrame {
 	private static final long serialVersionUID = 3227L;
-	
+
 	private static final String JABTITLE = "Jabberpoint 1.6 - OU";
 	public final static int WIDTH = 1200;
 	public final static int HEIGHT = 800;
-	
+
 	public SlideViewerFrame(String title, Presentation presentation) {
 		super(title);
 		SlideViewerComponent slideViewerComponent = new SlideViewerComponent(presentation, this);
@@ -28,24 +28,29 @@ public class SlideViewerFrame extends JFrame {
 		setupWindow(slideViewerComponent, presentation);
 	}
 
-// Setup GUI
-	public void setupWindow(SlideViewerComponent 
-			slideViewerComponent, Presentation presentation) {
+	public void setupWindow(SlideViewerComponent slideViewerComponent, Presentation presentation) {
 		setTitle(JABTITLE);
+
+		Command exit = new ExitAppCommand();
 		addWindowListener(new WindowAdapter() {
-				public void windowClosing(WindowEvent e) {
-					System.exit(0);
-				}
-			});
+			public void windowClosing(WindowEvent e) {
+				exit.execute();
+			}
+		});
+
 		getContentPane().add(slideViewerComponent);
-		// create commands and wire controllers
+
 		Command next = new NextSlideCommand(presentation);
 		Command prev = new PrevSlideCommand(presentation);
-		Command exit = new ExitAppCommand();
+		Command open = new OpenFileCommand(presentation, this, MenuController.TESTFILE);
+		Command newCmd = new NewPresentationCommand(presentation);
+		Command save = new SaveFileCommand(presentation, this, MenuController.SAVEFILE);
 
-		addKeyListener(new KeyController(next, prev, exit)); // add a controller
-		setMenuBar(new MenuController(this, presentation, next, prev, exit));    // add another controller
-		setSize(new Dimension(WIDTH, HEIGHT)); // Same sizes as Slide has.
+		addKeyListener(new KeyController(next, prev, exit));
+		setMenuBar(new MenuController(this, open, newCmd, save, next, prev, exit,
+				pageNum -> new GotoSlideCommand(presentation, pageNum)));
+
+		setSize(new Dimension(WIDTH, HEIGHT));
 		setVisible(true);
 	}
 }

@@ -28,16 +28,16 @@ public class KeyController extends KeyAdapter {
 			case KeyEvent.VK_DOWN:
 			case KeyEvent.VK_ENTER:
 			case '+':
-				if (nextCommand != null) nextCommand.execute();
+				nextCommand.execute();
 				break;
 			case KeyEvent.VK_PAGE_UP:
 			case KeyEvent.VK_UP:
 			case '-':
-				if (prevCommand != null) prevCommand.execute();
+				prevCommand.execute();
 				break;
 			case 'q':
 			case 'Q':
-				if (exitCommand != null) exitCommand.execute();
+				exitCommand.execute();
 				break;
 			default:
 				break;
