@@ -63,6 +63,11 @@ public class CompositeSlideItem extends SlideItem {
 		return new ArrayList<>(children);
 	}
 
+	@Override
+	public SlideItemKind getKind() {
+		return SlideItemKind.COMPOSITE;
+	}
+
 	/**
 	 * Check if this is a composite/container.
 	 * @return true since this is a composite

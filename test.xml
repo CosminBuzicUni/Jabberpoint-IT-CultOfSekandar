@@ -40,6 +40,15 @@
 		<item kind="text"  level="4">And this is level 4</item>
 	</slide>
 	<slide>
+		<title>Composite Item Demo</title>
+		<item kind="text" level="1">The next two items are grouped in a composite:</item>
+		<item kind="composite" level="2">
+			<item kind="text" level="3">Grouped text item</item>
+			<item kind="text" level="3">Also part of the same group</item>
+		</item>
+		<item kind="text" level="1">This item is outside the composite.</item>
+	</slide>
+	<slide>
 		<title>Laatste slide</title>
 		<item kind="text"  level="1">Navigation also can be done through the menu</item>
 		<item kind="text"  level="2">Load presentation: File->Open</item>

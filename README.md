@@ -12,7 +12,7 @@ The code was also cleaned up to better match the NHL Stenden coding style used i
 
 - Added Composite support for hierarchical slide content through `SlideItem` and `CompositeSlideItem`
 - Kept the Observer-based presentation update flow between `Presentation` and `SlideViewerComponent`
-- Added Command-based actions for next, previous, goto, and exit operations
+- Added Command-based actions for all user inputs: navigation (next, previous, goto), exit, and file operations (open, new, save)
 - Added unit tests and JaCoCo coverage reporting
 - Added CI/CD support so the project can be built and tested automatically
 

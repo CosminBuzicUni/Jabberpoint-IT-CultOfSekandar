@@ -39,6 +39,16 @@ class DemoPresentation implements PresentationReader {
 		presentation.append(slide);
 
 		slide = new Slide();
+		slide.setTitle("Composite Pattern Demo");
+		slide.append(1, "The next two items are grouped in a composite:");
+		CompositeSlideItem group = new CompositeSlideItem(2);
+		group.addChild(new TextItem(3, "Grouped text item"));
+		group.addChild(new TextItem(3, "Also part of the same group"));
+		slide.append(group);
+		slide.append(1, "This item is outside the composite.");
+		presentation.append(slide);
+
+		slide = new Slide();
 		slide.setTitle("The third slide");
 		slide.append(1, "To open a new presentation,");
 		slide.append(2, "use File->Open from the menu.");

@@ -148,6 +148,11 @@ public class CompositeSlideItemTest {
     }
 
     @Test
+    public void testGetKindIsComposite() {
+        assertEquals(SlideItemKind.COMPOSITE, composite.getKind());
+    }
+
+    @Test
     public void testIsCompositeAlwaysTrue() {
         assertTrue(composite.isComposite());
         composite.addChild(textItem);
