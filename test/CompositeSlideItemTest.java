@@ -174,11 +174,12 @@ public class CompositeSlideItemTest {
 
     @Test
     public void testGetBoundingBoxEmpty() {
-        Rectangle bounds = composite.getBoundingBox(graphics, null, 1.0f, Style.getStyle(0));
+        Style style0 = Style.getStyle(0);
+        Rectangle bounds = composite.getBoundingBox(graphics, null, 1.0f, style0);
         assertNotNull(bounds);
         assertEquals(0, bounds.width);
-        assertEquals(0, bounds.height);
-        assertEquals(0, bounds.x);
+        assertEquals(style0.leading, bounds.height); // leading is reserved even for empty composites
+        assertEquals((int) style0.indent, bounds.x);
         assertEquals(0, bounds.y);
     }
 

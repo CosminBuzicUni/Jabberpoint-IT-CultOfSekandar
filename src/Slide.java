@@ -76,17 +76,6 @@ public class Slide {
 		return null;
 	}
 
-	/**
-	 * Check if a specific item is a composite (container) or leaf node.
-	 * Useful for generic processing of mixed item hierarchies.
-	 * @param index the index of the item to check
-	 * @return true if the item is a composite, false if it's a leaf
-	 */
-	public boolean isCompositeItem(int index) {
-		SlideItem item = getItem(index);
-		return item != null && item.isComposite();
-	}
-
 	// draw the slide
 	public void draw(Graphics g, Rectangle area, ImageObserver view) {
 		float scale = getScale(area);

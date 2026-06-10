@@ -2,7 +2,6 @@ import java.awt.Rectangle;
 import java.awt.Graphics;
 import java.awt.image.ImageObserver;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /** <p>The abstract class for an item on a slide<p>
@@ -67,49 +66,10 @@ public abstract class SlideItem {
 	}
 
 // Give the bounding box
-	public abstract Rectangle getBoundingBox(Graphics g, 
+	public abstract Rectangle getBoundingBox(Graphics g,
 			ImageObserver observer, float scale, Style style);
 
 // Draw the item
-	public abstract void draw(int x, int y, float scale, 
+	public abstract void draw(int x, int y, float scale,
 			Graphics g, Style style, ImageObserver observer);
-
-	/**
-	 * Add a child component to this item.
-	 * Default implementation for leaf nodes - does nothing.
-	 * Override in composite classes.
-	 * @param item the SlideItem to add as a child
-	 */
-	public void addChild(SlideItem item) {
-		// Default implementation for leaf nodes - no children
-	}
-
-	/**
-	 * Remove a child component from this item.
-	 * Default implementation for leaf nodes - does nothing.
-	 * Override in composite classes.
-	 * @param item the SlideItem to remove from children
-	 */
-	public void removeChild(SlideItem item) {
-		// Default implementation for leaf nodes - no children
-	}
-
-	/**
-	 * Get all child components of this item.
-	 * Default implementation for leaf nodes - returns empty list.
-	 * Override in composite classes.
-	 * @return list of child SlideItems, or empty list for leaf nodes
-	 */
-	public List<SlideItem> getChildren() {
-		// Default implementation for leaf nodes - no children
-		return new java.util.ArrayList<>();
-	}
-
-	/**
-	 * Check if this item is a composite (container) or a leaf.
-	 * @return true if this is a composite/container, false if it's a leaf
-	 */
-	public boolean isComposite() {
-		return false;
-	}
 }

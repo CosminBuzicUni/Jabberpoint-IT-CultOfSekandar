@@ -33,14 +33,6 @@ public class TextItem extends SlideItem {
 	
 	private static final String EMPTYTEXT = "No Text Given";
 
-	static {
-		registerSlideItemType(KIND, new SlideItemBuilder() {
-			public SlideItem create(int level, String text) {
-				return new TextItem(level, text);
-			}
-		});
-	}
-
 // a textitem of level level, with the text string
 	public TextItem(int level, String string) {
 		super(level);

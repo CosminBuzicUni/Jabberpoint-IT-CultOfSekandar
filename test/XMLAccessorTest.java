@@ -60,7 +60,9 @@ public class XMLAccessorTest {
         accessor.loadFile(loaded, tempXml.getAbsolutePath());
 
         assertEquals(1, loaded.getSize());
-        SlideItem item = loaded.getSlide(0).getSlideItem(0);
+        Slide loadedSlide = loaded.getSlide(0);
+        assertEquals(1, loadedSlide.getSize()); // children must not be duplicated as top-level items
+        SlideItem item = loadedSlide.getSlideItem(0);
         assertTrue(item instanceof CompositeSlideItem);
         CompositeSlideItem loadedGroup = (CompositeSlideItem) item;
         assertEquals(2, loadedGroup.getChildCount());

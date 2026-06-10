@@ -54,26 +54,26 @@ public class XMLAccessor extends Accessor {
     }
 
 	public void loadFile(Presentation presentation, String filename) throws IOException {
-		int slideNumber, itemNumber, max = 0, maxItems = 0;
+		int slideNumber, itemNumber;
 		try {
-			DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();    
+			DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 			Document document = builder.parse(new File(filename)); // Create a JDOM document
 			Element doc = document.getDocumentElement();
 			presentation.setTitle(getTitle(doc, SHOWTITLE));
 
 			NodeList slides = doc.getElementsByTagName(SLIDE);
-			max = slides.getLength();
-			for (slideNumber = 0; slideNumber < max; slideNumber++) {
+			for (slideNumber = 0; slideNumber < slides.getLength(); slideNumber++) {
 				Element xmlSlide = (Element) slides.item(slideNumber);
 				Slide slide = new Slide();
 				slide.setTitle(getTitle(xmlSlide, SLIDETITLE));
 				presentation.append(slide);
 				
-				NodeList slideItems = xmlSlide.getElementsByTagName(ITEM);
-				maxItems = slideItems.getLength();
-				for (itemNumber = 0; itemNumber < maxItems; itemNumber++) {
-					Element item = (Element) slideItems.item(itemNumber);
-					loadSlideItem(slide, item);
+				NodeList slideNodes = xmlSlide.getChildNodes();
+				for (itemNumber = 0; itemNumber < slideNodes.getLength(); itemNumber++) {
+					Node node = slideNodes.item(itemNumber);
+					if (node.getNodeType() == Node.ELEMENT_NODE && ((Element) node).getTagName().equals(ITEM)) {
+						loadSlideItem(slide, (Element) node);
+					}
 				}
 			}
 		} 
@@ -160,9 +160,9 @@ public class XMLAccessor extends Accessor {
 
 	private void writeSlideItem(PrintWriter out, SlideItem item) {
 		out.print("<item kind=\"" + item.getKind() + "\" level=\"" + item.getLevel() + "\">");
-		if (item.isComposite()) {
+		if (item instanceof CompositeSlideItem) {
 			out.println();
-			for (SlideItem child : item.getChildren()) {
+			for (SlideItem child : ((CompositeSlideItem) item).getChildren()) {
 				out.print("\t");
 				writeSlideItem(out, child);
 			}

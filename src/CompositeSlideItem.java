@@ -31,34 +31,18 @@ public class CompositeSlideItem extends SlideItem {
 		this(0);
 	}
 
-	/**
-	 * Add a child component to this composite.
-	 * @param item the SlideItem to add
-	 */
-	@Override
 	public void addChild(SlideItem item) {
 		if (item != null && item != this) {
 			children.add(item);
 		}
 	}
 
-	/**
-	 * Remove a child component from this composite.
-	 * @param item the SlideItem to remove
-	 * @return true if the item was removed, false if it was not found
-	 */
-	@Override
 	public void removeChild(SlideItem item) {
 		if (item != null) {
 			children.remove(item);
 		}
 	}
 
-	/**
-	 * Get all child components.
-	 * @return a list of all child SlideItems
-	 */
-	@Override
 	public List<SlideItem> getChildren() {
 		return new ArrayList<>(children);
 	}
@@ -68,11 +52,6 @@ public class CompositeSlideItem extends SlideItem {
 		return SlideItemKind.COMPOSITE;
 	}
 
-	/**
-	 * Check if this is a composite/container.
-	 * @return true since this is a composite
-	 */
-	@Override
 	public boolean isComposite() {
 		return true;
 	}
@@ -97,55 +76,28 @@ public class CompositeSlideItem extends SlideItem {
 		return null;
 	}
 
-	/**
-	 * Calculate the bounding box for this composite by encompassing all children.
-	 * @param g the Graphics context
-	 * @param observer the image observer
-	 * @param scale the scale factor
-	 * @param style the style to apply
-	 * @return the bounding rectangle encompassing all children
-	 */
 	@Override
 	public Rectangle getBoundingBox(Graphics g, ImageObserver observer, float scale, Style style) {
-		if (children.isEmpty()) {
-			return new Rectangle(0, 0, 0, 0);
-		}
-
-		int minX = Integer.MAX_VALUE;
-		int minY = Integer.MAX_VALUE;
-		int maxX = Integer.MIN_VALUE;
-		int maxY = Integer.MIN_VALUE;
+		int totalHeight = (int) (style.leading * scale);
+		int maxWidth = 0;
 
 		for (SlideItem child : children) {
-			Rectangle childBounds = child.getBoundingBox(g, observer, scale, style);
-			if (childBounds != null) {
-				minX = Math.min(minX, childBounds.x);
-				minY = Math.min(minY, childBounds.y);
-				maxX = Math.max(maxX, childBounds.x + childBounds.width);
-				maxY = Math.max(maxY, childBounds.y + childBounds.height);
+			if (child != null) {
+				Style childStyle = Style.getStyle(child.getLevel());
+				Rectangle childBounds = child.getBoundingBox(g, observer, scale, childStyle);
+				if (childBounds != null) {
+					maxWidth = Math.max(maxWidth, childBounds.x + childBounds.width);
+					totalHeight += childBounds.height;
+				}
 			}
 		}
 
-		if (minX == Integer.MAX_VALUE) {
-			return new Rectangle(0, 0, 0, 0);
-		}
-
-		return new Rectangle(minX, minY, maxX - minX, maxY - minY);
+		return new Rectangle((int) (style.indent * scale), 0, maxWidth, totalHeight);
 	}
 
-	/**
-	 * Draw this composite and all its children recursively.
-	 * @param x the x coordinate
-	 * @param y the y coordinate
-	 * @param scale the scale factor
-	 * @param g the Graphics context
-	 * @param style the style to apply
-	 * @param observer the image observer
-	 */
 	@Override
 	public void draw(int x, int y, float scale, Graphics g, Style style, ImageObserver observer) {
-		// Draw each child component
-		int currentY = y;
+		int currentY = y + (int) (style.leading * scale);
 		for (SlideItem child : children) {
 			if (child != null) {
 				Style childStyle = Style.getStyle(child.getLevel());
