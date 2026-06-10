@@ -22,8 +22,8 @@ jobs:
       - name: Compile and create jar
         run: |
           mkdir -p out
-          javac -d out src/*.java
-          jar cfe JabberPoint.jar JabberPoint -C out .
+          javac -d out $(find src -name "*.java")
+          jar cfe JabberPoint.jar jabberpoint.JabberPoint -C out .
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
